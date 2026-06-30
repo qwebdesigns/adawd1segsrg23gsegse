@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>База знаний ZARUB</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-icon logo-icon-lg">₽</div>
+        <h1 class="text-slate-800">БАЗА ЗНАНИЙ <span style="color:var(--brand)">ZARUB</span></h1>
+        <p>Войдите в систему</p>
+      </div>
+      <label class="input-label">Почта</label>
+      <input id="login-email" type="email" placeholder="name@zarub.com" class="input-field" style="margin-bottom:16px" />
+      <label class="input-label">Пароль</label>
+      <input id="login-password" type="password" placeholder="••••••••" class="input-field" style="margin-bottom:16px" />
+      <div id="login-error" class="hidden flex items-center gap-2 text-red text-sm" style="margin-bottom:12px">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+        <span id="login-error-text"></span>
+      </div>
+      <button id="login-btn" class="btn-primary" style="width:100%;justify-content:center;padding:10px">
+        Войти
+      </button>
+    </div>
+  </div>
+
+  <!-- APP SHELL (hidden until logged in) -->
+  <div id="app-shell" class="hidden flex-col" style="height:100vh;overflow:hidden">
+
+    <!-- HEADER -->
+    <header id="app-header">
+      <button class="logo-btn" id="btn-home">
+        <div class="logo-icon">₽</div>
+        <span class="logo-title">БАЗА ЗНАНИЙ <span>ZARUB</span></span>
+      </button>
+
+      <div class="search-wrap">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+        <input id="search-input" type="text" placeholder="Поиск по всей базе…" />
+      </div>
+
+      <button id="btn-admin" class="hdr-btn hidden">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+        <span>Пользователи</span>
+      </button>
+
+      <div class="header-user">
+        <div class="avatar" id="header-avatar">U</div>
+        <div class="user-info">
+          <p id="header-name">—</p>
+          <p id="header-role">—</p>
+        </div>
+        <button id="btn-logout" class="icon-btn" title="Выйти">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" /></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ERROR BANNER -->
+    <div id="error-banner">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+      <span id="error-text"></span>
+      <button id="btn-close-error">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" /></svg>
+      </button>
+    </div>
+
+    <!-- MAIN VIEWS -->
+    <main id="main">
+
+      <!-- HOME VIEW -->
+      <div id="view-home" class="view">
+        <div class="page-wrap-wide" style="padding-top:48px">
+          <div class="flex items-center justify-between" style="margin-bottom:8px">
+            <h1 class="text-2xl font-bold text-slate-800">Внутренняя база знаний</h1>
+            <button id="btn-add-section" class="btn-primary hidden">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" /></svg>
+              Добавить раздел
+            </button>
+          </div>
+          <p class="text-slate-500 text-sm" style="margin-bottom:32px">Выберите раздел, чтобы перейти к материалам.</p>
+
+          <div id="add-section-row" class="inline-add hidden" style="max-width:480px;margin-bottom:24px">
+            <svg width="16" height="16" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" /></svg>
+            <input id="new-section-name" class="input-field flex-1" placeholder="Название раздела" />
+            <button id="btn-create-section" class="btn-primary btn-sm">Создать</button>
+            <button id="btn-cancel-section" class="icon-btn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" /></svg></button>
+          </div>
+
+          <div id="home-spinner" class="spinner-wrap">
+            <div class="spin"></div> Загрузка разделов…
+          </div>
+          <div id="sections-grid" class="sections-grid"></div>
+        </div>
+      </div>
+
+      <!-- SECTION VIEW -->
+      <div id="view-section" class="view">
+        <div class="page-wrap-wide">
+          <div class="breadcrumbs" id="bc-section"></div>
+          <div class="section-header-row">
+            <div class="section-header-left">
+              <div class="section-icon-lg" id="sec-icon-wrap">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <div>
+                <h1 id="sec-title" class="text-2xl font-bold text-slate-800"></h1>
+                <p id="sec-desc" class="text-sm text-slate-400"></p>
+              </div>
+            </div>
+            <div id="sec-actions" class="flex gap-2 items-center hidden">
+              <button id="btn-delete-section" class="icon-btn danger" title="Удалить раздел">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4h6v2" /></svg>
+              </button>
+              <button id="btn-add-category" class="btn-primary">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                  <line x1="12" y1="11" x2="12" y2="17" />
+                  <line x1="9" y1="14" x2="15" y2="14" /></svg>
+                Добавить категорию
+              </button>
+            </div>
+          </div>
+
+          <div id="add-cat-row" class="inline-add hidden">
+            <svg width="16" height="16" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+            <input id="new-cat-name" class="input-field flex-1" placeholder="Название категории" />
+            <button id="btn-create-cat" class="btn-primary btn-sm">Создать</button>
+            <button id="btn-cancel-cat" class="icon-btn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" /></svg></button>
+          </div>
+
+          <div id="sec-spinner" class="spinner-wrap hidden">
+            <div class="spin"></div> Загрузка…
+          </div>
+          <div id="categories-list"></div>
+          <div id="sec-empty" class="empty-state hidden">
+            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+              <line x1="12" y1="11" x2="12" y2="17" />
+              <line x1="9" y1="14" x2="15" y2="14" /></svg>
+            <p id="sec-empty-text">В этом разделе пока нет категорий.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORY VIEW -->
+      <div id="view-category" class="view">
+        <div class="page-wrap-wide">
+          <div class="breadcrumbs" id="bc-cat"></div>
+          <div class="section-header-row">
+            <div class="section-header-left">
+              <div class="section-icon-lg" id="cat-icon-wrap">
+                <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <div>
+                <h1 id="cat-title" class="text-2xl font-bold text-slate-800"></h1>
+                <p id="cat-subtitle" class="text-sm text-slate-400"></p>
+              </div>
+            </div>
+            <div id="cat-actions" class="flex gap-2 items-center hidden">
+              <button id="btn-delete-category" class="icon-btn danger" title="Удалить категорию">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
+                  <path d="M9 6V4h6v2" /></svg>
+              </button>
+              <button id="btn-add-article" class="btn-primary">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" /></svg>
+                Добавить статью
+              </button>
+            </div>
+          </div>
+          <div id="cat-spinner" class="spinner-wrap hidden">
+            <div class="spin"></div>
+          </div>
+          <div id="cat-articles-grid" class="articles-grid"></div>
+          <div id="cat-empty" class="empty-state hidden">
+            <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" /></svg>
+            <p id="cat-empty-text">В этой категории пока нет статей.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE VIEW -->
+      <div id="view-page" class="view">
+        <div class="page-wrap">
+          <div id="page-spinner" class="spinner-wrap">
+            <div class="spin"></div> Открываем статью…
+          </div>
+          <div id="page-content" class="hidden">
+            <div class="breadcrumbs" id="bc-page"></div>
+            <div class="flex items-start justify-between gap-4" style="margin-bottom:8px">
+              <h1 id="page-title" class="text-3xl font-bold text-slate-800"></h1>
+              <div id="page-edit-actions" class="flex gap-1 hidden">
+                <button id="btn-edit-page" class="icon-btn" title="Редактировать">
+                  <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                </button>
+                <button id="btn-delete-page" class="icon-btn danger" title="Удалить">
+                  <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    <path d="M10 11v6" />
+                    <path d="M14 11v6" />
+                    <path d="M9 6V4h6v2" /></svg>
+                </button>
+              </div>
+            </div>
+            <div class="page-meta" id="page-meta"></div>
+            <div id="page-body" class="kb-content text-slate-700 leading-relaxed"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EDITOR VIEW -->
+      <div id="view-editor" class="view">
+        <div class="page-wrap">
+          <input id="editor-title" class="editor-title" placeholder="Заголовок статьи" />
+          <div class="editor-meta-row">
+            <div>
+              <label class="input-label">Категория</label>
+              <select id="editor-cat" class="input-field"></select>
+            </div>
+            <div>
+              <label class="input-label">Теги (через запятую)</label>
+              <input id="editor-tags" class="input-field" placeholder="необязательно" />
+            </div>
+          </div>
+          <div class="toolbar-wrap">
+            <div class="toolbar" id="toolbar"></div>
+          </div>
+          <div id="editor-area" class="editor-area kb-content" contenteditable="true" spellcheck="true"></div>
+          <div class="editor-actions">
+            <button id="btn-save-article" class="btn-primary">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 21H5a2 2 0 0 0-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" /></svg>
+              Сохранить
+            </button>
+            <button id="btn-cancel-editor" class="btn-secondary">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" /></svg>
+              Отмена
+            </button>
+            <span id="editor-hint" class="hint-text hidden">Введите заголовок и выберите категорию</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEARCH VIEW -->
+      <div id="view-search" class="view">
+        <div class="page-wrap">
+          <button id="btn-back-from-search" class="flex items-center gap-1 text-sm text-slate-400" style="margin-bottom:16px;transition:color .15s" onmouseover="this.style.color='var(--brand)'" onmouseout="this.style.color=''">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <polyline points="15 18 9 12 15 6" /></svg>
+            На главную
+          </button>
+          <h2 id="search-heading" class="text-lg font-semibold text-slate-700" style="margin-bottom:16px"></h2>
+          <div id="search-results" class="flex flex-col gap-2"></div>
+        </div>
+      </div>
+
+      <!-- ADMIN VIEW -->
+      <div id="view-admin" class="view">
+        <div class="page-wrap-wide" style="max-width:720px">
+          <div class="breadcrumbs" id="bc-admin">
+            <button id="bc-admin-home" class="flex items-center gap-1">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" /></svg>
+              Главная
+            </button>
+            <span class="sep">›</span>
+            <span class="crumb-current">Управление пользователями</span>
+          </div>
+          <div class="flex items-center gap-3" style="margin-bottom:24px">
+            <div class="section-icon-lg" style="background:#7c3aed1a">
+              <svg width="22" height="22" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-slate-800">Пользователи</h1>
+              <p class="text-sm text-slate-400">Добавляйте сотрудников и выдавайте права доступа</p>
+            </div>
+          </div>
+
+          <div class="admin-box">
+            <h2 class="font-semibold text-slate-700" style="margin-bottom:12px">Добавить пользователя</h2>
+            <div class="editor-meta-row" style="margin-bottom:12px">
+              <div>
+                <label class="input-label">Почта *</label>
+                <input id="new-user-email" class="input-field" placeholder="name@zarub.com" />
+              </div>
+              <div>
+                <label class="input-label">Имя</label>
+                <input id="new-user-name" class="input-field" placeholder="необязательно" />
+              </div>
+            </div>
+            <label class="input-label" style="margin-bottom:6px">Уровень доступа</label>
+            <div class="role-options" id="role-options">
+              <div class="role-option selected" data-role="viewer">
+                <div class="role-option-title">
+                  <svg width="15" height="15" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                    <circle cx="12" cy="12" r="3" /></svg>
+                  Просмотр
+                </div>
+                <div class="role-option-desc">Только чтение базы знаний</div>
+              </div>
+              <div class="role-option" data-role="editor">
+                <div class="role-option-title">
+                  <svg width="15" height="15" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                  Редактирование
+                </div>
+                <div class="role-option-desc">Чтение и изменение всей базы</div>
+              </div>
+              <div class="role-option" data-role="admin">
+                <div class="role-option-title">
+                  <svg width="15" height="15" fill="none" stroke="var(--brand)" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+                  Администратор
+                </div>
+                <div class="role-option-desc">Полный доступ + управление пользователями</div>
+              </div>
+            </div>
+            <div id="add-user-error" class="hidden flex items-center gap-2 text-red text-sm" style="margin-bottom:8px">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+              <span id="add-user-error-text"></span>
+            </div>
+            <button id="btn-create-user" class="btn-primary">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" /></svg>
+              Создать пользователя
+            </button>
+            <div id="created-user-info" class="created-info hidden"></div>
+          </div>
+
+          <div class="flex items-center gap-2" style="margin-bottom:12px">
+            <h2 class="font-semibold text-slate-700">Все пользователи</h2>
+            <span id="user-count" class="text-slate-400 text-sm font-normal"></span>
+          </div>
+          <div id="admin-spinner" class="spinner-wrap hidden">
+            <div class="spin"></div>
+          </div>
+          <div id="users-list" class="flex flex-col gap-2"></div>
+          <div class="notice-row">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-top:1px;flex-shrink:0">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+            Пароль показывается один раз при создании или сбросе — сохраните его сразу.
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal-overlay hidden">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <h3 id="modal-title"></h3>
+      <p id="modal-text"></p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn-secondary">Отмена</button>
+        <button id="modal-confirm" class="btn-primary btn-danger">Удалить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js.js"></script>
+</body>
+
+</html>
